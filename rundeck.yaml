@@ -1,0 +1,144 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rundeck
+  namespace: mynamespace
+  labels:
+    app: rundeck
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: rundeck
+  template:
+    metadata:
+      labels:
+        app: rundeck
+    spec:
+      containers:
+        - name: rundeck
+          image: rundeck/rundeck:3.3.11
+          ports:
+            - containerPort: 4440
+          env:
+            - name: "JVM_MAX_RAM_PERCENTAGE"
+              valueFrom:
+                secretKeyRef:
+                  name: rundeck-secrets
+                  key: JVM_MAX_RAM_PERCENTAGE
+            - name: "RUNDECK_DATABASE_URL"
+              valueFrom:
+                secretKeyRef:
+                  name: rundeck-secrets
+                  key: RUNDECK_DATABASE_URL
+            - name: "RUNDECK_DATABASE_DRIVER"
+              valueFrom:
+                secretKeyRef:
+                  name: rundeck-secrets
+                  key: RUNDECK_DATABASE_DRIVER
+            - name: "RUNDECK_DATABASE_USERNAME"
+              valueFrom:
+                secretKeyRef:
+                  name: rundeck-secrets
+                  key: RUNDECK_DATABASE_USERNAME
+            - name: "RUNDECK_DATABASE_PASSWORD"
+              valueFrom:
+                secretKeyRef:
+                  name: rundeck-secrets
+                  key: RUNDECK_DATABASE_PASSWORD
+            - name: "RUNDECK_LOGGING_AUDIT_ENABLED"
+              valueFrom:
+                secretKeyRef:
+                  name: rundeck-secrets
+                  key: RUNDECK_LOGGING_AUDIT_ENABLED
+            - name: "RUNDECK_JAAS_MODULES_0"
+              valueFrom:
+                secretKeyRef:
+                  name: rundeck-secrets
+                  key: RUNDECK_JAAS_MODULES_0
+            - name: "RUNDECK_JAAS_LDAP_FLAG"
+              valueFrom:
+                secretKeyRef:
+                  name: rundeck-secrets
+                  key: RUNDECK_JAAS_LDAP_FLAG
+            - name: "RUNDECK_JAAS_LDAP_PROVIDERURL"
+              valueFrom:
+                secretKeyRef:
+                  name: rundeck-secrets
+                  key: RUNDECK_JAAS_LDAP_PROVIDERURL
+            - name: "RUNDECK_JAAS_LDAP_BINDDN"
+              valueFrom:
+                secretKeyRef:
+                  name: rundeck-secrets
+                  key: RUNDECK_JAAS_LDAP_BINDDN
+            - name: "RUNDECK_JAAS_LDAP_BINDPASSWORD"
+              valueFrom:
+                secretKeyRef:
+                  name: rundeck-secrets
+                  key: RUNDECK_JAAS_LDAP_BINDPASSWORD
+            - name: "RUNDECK_JAAS_LDAP_USERBASEDN"
+              valueFrom:
+                secretKeyRef:
+                  name: rundeck-secrets
+                  key: RUNDECK_JAAS_LDAP_USERBASEDN
+            - name: "RUNDECK_JAAS_LDAP_ROLEBASEDN"
+              valueFrom:
+                secretKeyRef:
+                  name: rundeck-secrets
+                  key: RUNDECK_JAAS_LDAP_ROLEBASEDN
+            - name: "RUNDECK_GRAILS_URL"
+              valueFrom:
+                secretKeyRef:
+                  name: rundeck-secrets
+                  key: RUNDECK_GRAILS_URL
+            - name: "RUNDECK_SERVER_FORWARDED"
+              valueFrom:
+                secretKeyRef:
+                  name: rundeck-secrets
+                  key: RUNDECK_SERVER_FORWARDED
+            - name: "RUNDECK_JAAS_LDAP_USERRDNATTRIBUTE"
+              valueFrom: 
+                secretKeyRef:
+                  name: rundeck-secrets
+                  key: RUNDECK_JAAS_LDAP_USERRDNATTRIBUTE
+            - name: "RUNDECK_JAAS_LDAP_USERIDATTRIBUTE"
+              valueFrom:
+                secretKeyRef:
+                  name: rundeck-secrets
+                  key: RUNDECK_JAAS_LDAP_USERIDATTRIBUTE
+            - name: "RUNDECK_JAAS_LDAP_ROLEMEMBERATTRIBUTE"
+              valueFrom:
+                secretKeyRef:
+                  name: rundeck-secrets
+                  key: RUNDECK_JAAS_LDAP_ROLEMEMBERATTRIBUTE
+            - name: "RUNDECK_JAAS_LDAP_ROLEOBJECTCLASS"
+              valueFrom:
+                secretKeyRef:
+                  name: rundeck-secrets
+                  key: RUNDECK_JAAS_LDAP_ROLEOBJECTCLASS
+          volumeMounts:
+            - name: aclpolicy
+              mountPath: /home/rundeck/etc/user.aclpolicy
+              subPath: user.aclpolicy
+      volumes:
+        - name: aclpolicy
+          secret:
+            secretName: rundeck-adm-policy
+            items:
+            - key: rundeck-admin-role.yaml
+              path: user.aclpolicy
+---
+### Service Expose
+apiVersion: v1
+kind: Service
+metadata:
+  name: rundeck-svc
+  namespace: inmetro
+spec:
+  selector:
+    app: rundeck
+  type: ClusterIP
+  ports:
+    - protocol: TCP
+      port: 4440
+      targetPort: 4440
