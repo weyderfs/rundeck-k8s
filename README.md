@@ -60,4 +60,4 @@ RUNDECK_JAAS_MODULES_0=JettyCombinedLdapLoginModule
 
 :email: **Email**: weyderfs@gmail.com
 
-:coffe: Você pode me ajudar me comprando um [café](https://www.buymeacoffee.com/weyderfs).
+:coffee: You can support me with a [coffee](https://www.buymeacoffee.com/weyderfs).
