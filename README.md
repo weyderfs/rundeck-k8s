@@ -6,7 +6,7 @@
 
 
 ## Rundeck configs
-In my sample, I used to **Kubernetes Sercrets** to protect my data. **I strongly advise you to do the same**. To understand how to handle _secrets_ in Kubernetes look [here](https://kubernetes.io/docs/tasks/configmap-secret/managing-secret-using-config-file/#create-the-config-file). I've created the _secret_ file`rundeck-secretes` and encode the values using _base64_
+In my sample, I used to **Kubernetes Sercrets** to protect my data. **I strongly advise you to do the same**. To understand how to handle _secrets_ in Kubernetes look [here](https://kubernetes.io/docs/tasks/configmap-secret/managing-secret-using-config-file/#create-the-config-file). I've created the _secret_ file `rundeck-secretes` and encode the values using _base64_
 
 Example to enconde:
 ```
@@ -21,7 +21,7 @@ echo -n 'bXl2YWx1ZQ==' | base64 --decode
 #### Rundeck Role
 The file `rundeck-admin-role.yaml` is used to create a policy that _allow_ your Active Directory users use the Rundeck features, in this file gave the **admin** permitions to users. To manage policy you can check [here](https://docs.rundeck.com/docs/administration/security/authorization.html#access-control-policy). In my deployment this policy is provide via **secret**.
 
-#### Variables in used
+#### Variables in use:
 ```
 RUNDECK_DATABASE_DRIVER
 RUNDECK_DATABASE_PASSWORD
@@ -32,7 +32,6 @@ RUNDECK_JAAS_MODULES_0
 RUNDECK_LOGGING_AUDIT_ENABLED
 RUNDECK_SERVER_FORWARDED
 ```
-
 
 ## LDAP or Acive Directory configs
 

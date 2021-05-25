@@ -1,0 +1,11 @@
+---
+kind: ClusterRole
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: rundeck-role
+  labels:
+    app: rundeck
+rules:
+- apiGroups: ["autoscaling"]
+  resources: ["horizontalpodautoscalers"]
+  verbs: ["list", "get", "watch", "patch", "update"]

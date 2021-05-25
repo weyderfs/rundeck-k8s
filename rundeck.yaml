@@ -15,6 +15,9 @@ spec:
       labels:
         app: rundeck
     spec:
+      serviceAccountName: rundeck
+      securityContext:
+       fsGroup: 1000
       containers:
         - name: rundeck
           image: rundeck/rundeck:3.3.11
@@ -120,6 +123,12 @@ spec:
             - name: aclpolicy
               mountPath: /home/rundeck/etc/user.aclpolicy
               subPath: user.aclpolicy
+            - name: rundeck-persistent-storage
+              mountPath: /home/rundeck/projects
+              subPath: projects
+            - name: rundeck-persistent-storage
+              mountPath: /home/rundeck/libext
+              subPath: libext    
       volumes:
         - name: aclpolicy
           secret:
@@ -127,6 +136,11 @@ spec:
             items:
             - key: rundeck-admin-role.yaml
               path: user.aclpolicy
+        - name: rundeck-persistent-storage
+          persistentVolumeClaim: 
+            claimName: rundeck        
+    # securityContext:
+    # fsGroup: 775
 ---
 ### Service Expose
 apiVersion: v1
@@ -142,3 +156,25 @@ spec:
     - protocol: TCP
       port: 4440
       targetPort: 4440
+---
+### Istio Mesh
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+   name: rundeck-internal-rule
+   namespace: mynamespace
+spec:
+   hosts:
+   - rundeck.guiabolso.in
+   gateways:
+   - default/main-gateway
+   - mesh
+   http:
+   - match:
+     - uri:
+         prefix: /
+     route:
+     - destination:
+        port:
+          number: 4440
+        host: rundeck-svc.mynamespace.svc.cluster.local
