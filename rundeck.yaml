@@ -165,7 +165,7 @@ metadata:
    namespace: mynamespace
 spec:
    hosts:
-   - rundeck.guiabolso.in
+   - rundeck.mydomain.com
    gateways:
    - default/main-gateway
    - mesh
