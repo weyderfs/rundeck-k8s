@@ -20,7 +20,7 @@ spec:
        fsGroup: 1000
       containers:
         - name: rundeck
-          image: rundeck/rundeck:3.3.11
+          image: rundeck/rundeck:3.4.9
           ports:
             - containerPort: 4440
           env:
