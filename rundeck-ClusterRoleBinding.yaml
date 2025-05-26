@@ -4,13 +4,13 @@ kind: ClusterRoleBinding
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
   name: rundeck-RoleBinding
-  namespace: mynamespace
+  namespace: {{NAMESPACE}}
   labels:
    app: rundeck
 subjects:
 - kind: ServiceAccount
   name: rundeck
-  namespace: mynamespace
+  namespace: {{NAMESPACE}}
 roleRef:
   kind: ClusterRole
   name: rundeck-role
