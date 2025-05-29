@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: rundeck
-  namespace: mynamespace
+  namespace: {{NAMESPACE}}
   labels:
     app: rundeck
 spec:
@@ -20,9 +20,28 @@ spec:
        fsGroup: 1000
       containers:
         - name: rundeck
-          image: rundeck/rundeck:4.5.0
+          image: rundeck/rundeck:5.12.0
           ports:
             - containerPort: 4440
+          resources:
+            requests:
+              cpu: "500m"
+              memory: "1Gi"
+            limits:
+              cpu: "1"
+              memory: "2Gi"
+          livenessProbe:
+            httpGet:
+              path: /api/41/system/health
+              port: 4440
+            initialDelaySeconds: 60
+            periodSeconds: 30
+          readinessProbe:
+            httpGet:
+              path: /api/41/system/health
+              port: 4440
+            initialDelaySeconds: 30
+            periodSeconds: 10
           env:
             - name: "JVM_MAX_RAM_PERCENTAGE"
               valueFrom:
@@ -147,7 +166,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: rundeck-svc
-  namespace: mynamespace
+  namespace: {{NAMESPACE}}
 spec:
   selector:
     app: rundeck
@@ -162,10 +181,10 @@ apiVersion: networking.istio.io/v1beta1
 kind: VirtualService
 metadata:
    name: rundeck-internal-rule
-   namespace: mynamespace
+   namespace: {{NAMESPACE}}
 spec:
    hosts:
-   - rundeck.mydomain.com
+   - rundeck.{{DOMAIN}}
    gateways:
    - default/main-gateway
    - mesh
@@ -177,4 +196,4 @@ spec:
      - destination:
         port:
           number: 4440
-        host: rundeck-svc.mynamespace.svc.cluster.local
+        host: rundeck-svc.{{NAMESPACE}}.svc.cluster.local
